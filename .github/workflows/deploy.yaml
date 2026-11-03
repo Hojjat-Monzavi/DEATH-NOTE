@@ -1,0 +1,82 @@
+name: Build & Deploy Vault to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Cache the one-time MathJax + Mermaid downloads.
+      # Bump the key when you want to force a re-download (e.g. new major versions).
+      - name: Cache MathJax & Mermaid
+        uses: actions/cache@v4
+        with:
+          path: site/_libs
+          key: md2html-libs-mathjax4-mermaid11-v1
+
+      - name: Verify vault folder exists
+        run: test -d notes || (echo "::error::Expected vault at ./notes"; exit 1)
+
+      - name: Convert vault
+        run: |
+          if [ -f fonts/regular.ttf ]; then
+            BOLD=""
+            [ -f fonts/bold.ttf ] && BOLD="fonts/bold.ttf"
+            python md2html_offline.py notes/ -o site/ --font fonts/regular.ttf $BOLD
+          else
+            echo "::warning::No font at fonts/regular.ttf — using --no-font"
+            python md2html_offline.py notes/ -o site/ --no-font
+          fi
+
+      - name: Verify generated site
+        run: |
+          test -f site/index.html || (echo "::error::site/index.html missing"; exit 1)
+          test -f site/_libs/mathjax/tex-svg.js || (echo "::error::MathJax missing"; exit 1)
+          test -f site/_libs/mermaid/mermaid.min.js || (echo "::error::Mermaid missing"; exit 1)
+          echo "Site OK: $(find site -name '*.html' | wc -l) HTML pages"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true          # auto-enable Pages on first run
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

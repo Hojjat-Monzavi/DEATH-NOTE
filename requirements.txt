@@ -1,0 +1,4 @@
+markdown-it-py>=3.0
+mdit-py-plugins>=0.4
+pyyaml>=6.0
+linkify-it-py>=2.0
