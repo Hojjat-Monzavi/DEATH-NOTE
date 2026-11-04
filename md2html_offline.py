@@ -167,7 +167,7 @@ input[type=checkbox]{accent-color:var(--fg)}
 # ---------------------------------------------------------------------------
 # font embedding
 # ---------------------------------------------------------------------------
-FONT_NAMES = ("iransharp", "nazanin")
+FONT_NAMES = ("iransharp(fanum)small", "nazanin")
 FONT_FMT = {".ttf": "truetype", ".otf": "opentype", ".woff": "woff", ".woff2": "woff2"}
 WEIGHT_WORDS = ("bold", "light", "black", "medium", "thin", "heavy", "ultra", "italic", "fa")
 FONT_CSS = ""
