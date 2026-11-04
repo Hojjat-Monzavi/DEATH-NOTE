@@ -1172,19 +1172,10 @@ def main() -> None:
     site = Site(root, out, tree, notes, files, libs_dir)
     multi = len(notes) > 1
     for src, _title in notes:
-        print("wrote", site.page(src, multi, lang=a.lang,
+        print("wrote", site.page(src, True, lang=a.lang,
                                  show_toc=not a.no_toc,
                                  toc_label=a.toc_label))
-
-    if multi:
-        print("wrote", index_page(site, tree, lang=a.lang))
-    else:
-        only = notes[0][0]
-        dest = site.out / only.relative_to(root).with_suffix(".html")
-        index = site.out / "index.html"
-        if dest != index:
-            dest.rename(index)
-            print("renamed", dest.name, "→ index.html")
+    print("wrote", index_page(site, tree, lang=a.lang))
 
 if __name__ == "__main__":
     main()
