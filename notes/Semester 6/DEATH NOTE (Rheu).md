@@ -1,4 +1,49 @@
+# Rheumatology
+# Vasculitis
 
+| بیماری |                    عارضه تنفسی                     |               عارضه کلیوی               |                        عارضه چشمی - عصبی                         |       عارضه پوستی        |        عارضه قلبی         |                                      دیگه چی                                       |
+| :----: | :------------------------------------------------: | :-------------------------------------: | :--------------------------------------------------------------: | :----------------------: | :-----------------------: | :--------------------------------------------------------------------------------: |
+|  GPA   | ==کاویته و اینفلتره<br><br>سینوزیت های خونی چرکی== |           آسیمپوتوماتیک تا GN           | منونوریت مولتیپلکس - سورال <br>267<br><br>بیرون زدگی چشم و کنژنک |       پتشی پورپورا       |         پریکاردیت         | **==Strawberry Gum==**<br><br>$Plt \uparrow$<br>$RBC \downarrow$<br>$WBC \uparrow$ |
+|  EGPA  |        آسم و پنومونی<br><br>==Nasal Polyp==        |                   GN                    |                                                                  |                          | HF و Pericardial Effusion |            ==واسکولیت نکروزان==<br><br>$Eosinophil > 1000-1500 (10\%)$             |
+|  MPA   |            **==Alveolar haemorrhage==**            |              **==RPGN==**               |                                                                  |         پورپورا          |                           |                   تب غیر قابل <br>توضیح<br><br>==بدون گرانلوم==                    |
+|  PAN   |             **==بدون هیچ عارضه ای==**              | ==بدون GN==<br>هایپرتنشن و میکروآنوریسم |                        منونوریت مولتیپلکس                        | **==Digital Gangrene==** |                           |                         **==سرونگاتیو<br> بدون گرانلوم==**                         |
+
+# Scleroderma
+
+**==همه این نکات و نمودار ها سواله==**
+
+```mermaid
+graph RL
+A[ریسک فاکتور های PAH]
+A --> Limited --> Telangectasis
+A --> __[سن بالا]
+A --> U1RN,U3RN,CEN
+```
+```mermaid
+graph TD
+A[Renal Crisis RF]
+A -- مثل همه بیماری کلیه --> __[مرد سیاه]
+A --> Thrombocytopenia
+A --> b[Diffuse]
+b --> RNA-III
+b --> _[Friction Rub]
+b --> myopathy
+```
+ **بیشترین اسکور تشخیصی**:
+1. **==MCP==** Scleroderma : 9 Score
+2. **==Sclerodactyly==** : 4 Score
+
+| TARGET ANTIGEN                                                    | PROMINENT CHARACTERISTIC CLINICAL ASSOCIATION                                                                                                                    |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **DNA Topoisomerase I (Scl-70)**<br>Speckled pattern              | ==**Tendon friction rubs**==, digital ischemic ulcers, scleroderma, extensive skin involvement, **==early ILD==**, cardiac involvement, scleroderma renal crisis |
+| **Centromere proteins**<br>Discreet speckled (centromere) pattern | ==Digital ischemic ulcers, calcinosis cutis, isolated PAH==; renal crisis rare                                                                                   |
+| **RNA polymerase III**<br>Speckled pattern                        | Rapidly progressive skin, tendon friction rubs, joint contractures, **==GAVE==**, **==renal crisis==**, contemporaneous **==cancers==**; digital ulcers rare     |
+| U3-RNP (fibrillarin)<br>Nucleolar pattern                         | **==PAH==**, **==ILD==**, scleroderma renal crisis, GI tract involvement, myositis                                                                               |
+| Th/T₀<br>Nucleolar pattern                                        | ILD, PAH                                                                                                                                                         |
+| PM/Scl<br>Nucleolar pattern                                       | Calcinosis cutis, ILD, **==myositis overlap==**                                                                                                                  |
+| Ku<br>Speckled pattern                                            | SLE, myositis overlap                                                                                                                                            |
+| U1-RNP<br>Speckled pattern                                        | PAH, inflammatory arthritis, myositis overlap                                                                                                                    |
+| U12 RNP<br>Speckled pattern                                       | ILD                                                                                                                                                              |
 # OA
 ## نکات امتحان
 1. بر خلاف نقرس و RA، در مایع مفصلی **==WBC<2000==** 
