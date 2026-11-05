@@ -53,121 +53,250 @@ esc = html.escape
 # ---------------------------------------------------------------------------
 FONT = '"BNazanin", "B Nazanin", Tahoma, sans-serif'
 
+# ─── Optimised CSS ─────────────────────────────────────────────────────────
+# Design tokens · quiet borders · minimal headings · horizontal-chip TOC on
+# mobile, sticky vertical TOC on desktop · circular back-to-top · rounded
+# code/search/tree chrome. Preserves every class the generator emits.
 CSS_T = """
-:root{--bg:#fff;--fg:#000;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#000;--fg:#fff;color-scheme:dark}}
-:root[data-theme=dark]{--bg:#000;--fg:#fff;color-scheme:dark}
+:root{
+  --bg:#fff;--fg:#18181b;--muted:#71717a;--border:#e4e4e7;--code-bg:#fafafa;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    --bg:#0b0b0e;--fg:#e4e4e7;--muted:#a1a1aa;--border:#27272a;--code-bg:#141417;
+    color-scheme:dark;
+  }
+}
+:root[data-theme=dark]{
+  --bg:#0b0b0e;--fg:#e4e4e7;--muted:#a1a1aa;--border:#27272a;--code-bg:#141417;
+  color-scheme:dark;
+}
 *{box-sizing:border-box;border-radius:0}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.9 FONT;overflow-wrap:break-word}
+
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font:17px/1.75 FONT;overflow-wrap:break-word;
+  -webkit-font-smoothing:antialiased;
+}
+@media (min-width:60rem){body{font-size:18px}}
+
 main{max-width:52rem;margin:0 auto;padding:0 1rem 4rem}
 main:has(.layout){max-width:72rem}
-nav{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:2px solid var(--fg);margin-bottom:1.5rem;font-size:.9em;gap:.6rem;flex-wrap:wrap}
-button{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--fg);padding:0 .8rem;cursor:pointer}
-button:hover{background:var(--fg);color:var(--bg)}
-a{color:var(--fg);text-decoration:underline;text-underline-offset:.2em}
-a.unresolved{text-decoration:underline dotted}
-h1,h2,h3,h4,h5,h6{background:var(--fg);color:var(--bg);padding:.1em .6rem;line-height:1.6;margin:2rem 0 1rem;scroll-margin-top:1rem}
-h1{font-size:1.6em}h2{font-size:1.35em}h3{font-size:1.2em}h4,h5,h6{font-size:1em}
-p,ul,ol{margin:.9rem 0}
-li{margin:.25rem 0}
-ul,ol{padding-inline-start:1.6rem}
-hr{border:0;border-top:2px solid var(--fg);margin:2rem 0}
-img,video{max-width:100%;height:auto}
-mark{background:var(--fg);color:var(--bg);padding:0 .15em}
-.tag{border:1px solid var(--fg);padding:0 .35em;font-size:.85em}
-blockquote{margin:1rem 0;padding:.1rem 1rem;border-inline-start:4px solid var(--fg)}
-.callout,details.callout{border:2px solid var(--fg);margin:1rem 0}
-.callout-title,details.callout>summary{font-weight:bold;padding:.2rem .8rem}
-.callout-body{padding:.1rem .8rem;border-top:1px solid var(--fg)}
-details.callout[open]>summary{border-bottom:1px solid var(--fg)}
+
+/* ─── Top nav (scoped so it cannot bleed into .toc) ──────────────── */
+main>nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.75rem 0;margin-bottom:1.5rem;font-size:.9em;
+  border-bottom:1px solid var(--border);gap:.5rem;flex-wrap:wrap;
+}
+main>nav a{color:var(--muted);text-decoration:none}
+main>nav a:hover{color:var(--fg)}
+
+/* ─── Buttons / links ────────────────────────────────────────────── */
+button{
+  font:inherit;color:var(--fg);background:transparent;
+  border:1px solid var(--border);padding:.35rem .7rem;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+button:hover{background:var(--code-bg);border-color:var(--fg)}
+
+a{
+  color:var(--fg);text-decoration:underline;text-underline-offset:.2em;
+  text-decoration-color:var(--border);text-decoration-thickness:1px;
+}
+a:hover{text-decoration-color:var(--fg)}
+a.unresolved{text-decoration-style:dotted}
+
+/* ─── Headings ───────────────────────────────────────────────────── */
+h1,h2,h3,h4,h5,h6{
+  line-height:1.35;margin:2rem 0 .75rem;font-weight:700;
+  scroll-margin-top:1rem;
+}
+h1{font-size:1.6em;padding-bottom:.3em;border-bottom:2px solid var(--fg)}
+h2{font-size:1.3em;padding-bottom:.2em;border-bottom:1px solid var(--border)}
+h3{font-size:1.15em;border-inline-start:3px solid var(--fg);padding-inline-start:.75rem}
+h4,h5,h6{font-size:1em}
+
+/* ─── Text blocks ────────────────────────────────────────────────── */
+p,ul,ol{margin:.85rem 0}
+li{margin:.2rem 0}
+ul,ol{padding-inline-start:1.5rem}
+hr{border:0;border-top:1px solid var(--border);margin:2rem 0}
+img,video{max-width:100%;height:auto;display:block}
+mark{background:var(--fg);color:var(--bg);padding:0 .15em;border-radius:2px}
+.tag{border:1px solid var(--border);padding:0 .35em;font-size:.85em;border-radius:2px;color:var(--muted)}
+blockquote{
+  margin:1rem 0;padding:.1rem 1rem;
+  border-inline-start:3px solid var(--border);color:var(--muted);
+}
+
+/* ─── Callouts ───────────────────────────────────────────────────── */
+.callout,details.callout{border:1px solid var(--border);border-radius:4px;margin:1rem 0}
+.callout-title,details.callout>summary{font-weight:700;padding:.4rem .8rem}
+.callout-body{padding:.1rem .8rem;border-top:1px solid var(--border)}
+details.callout[open]>summary{border-bottom:1px solid var(--border)}
 details.callout>summary{cursor:pointer}
-.callout-body>:first-child{margin-top:.6rem}.callout-body>:last-child{margin-bottom:.6rem}
-.embed{border-inline-start:2px solid var(--fg);padding:0 1rem;margin:1rem 0}
-.tw{overflow-x:auto;margin:1rem 0}
-table{border-collapse:collapse;width:100%}
-td,th{border:1px solid var(--fg);padding:.35rem .6rem;vertical-align:top;min-width:7rem}
-th{background:var(--fg);color:var(--bg)}
-code{font:.9em Consolas,Menlo,monospace;border:1px solid var(--fg);padding:0 .25em}
-pre{border:1px solid var(--fg);padding:.7rem;overflow-x:auto;direction:ltr;text-align:left;line-height:1.5}
-pre code{border:0;padding:0;direction:inherit;unicode-bidi:inherit}
-pre.mermaid{border:0;text-align:center;background:var(--bg);direction:ltr}
+.callout-body>:first-child{margin-top:.6rem}
+.callout-body>:last-child{margin-bottom:.6rem}
+
+/* ─── Embeds ─────────────────────────────────────────────────────── */
+.embed{border-inline-start:3px solid var(--border);padding:0 1rem;margin:1rem 0}
+
+/* ─── Tables ─────────────────────────────────────────────────────── */
+.tw{overflow-x:auto;margin:1rem 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.92em}
+td,th{border:1px solid var(--border);padding:.55rem .7rem;vertical-align:top;min-width:6rem}
+th{background:var(--code-bg);font-weight:700;text-align:start}
+@media (max-width:40rem){
+  td,th{padding:.4rem .5rem;min-width:5rem;font-size:.9em}
+}
+
+/* ─── Code ───────────────────────────────────────────────────────── */
+code{
+  font:.88em Consolas,Menlo,monospace;background:var(--code-bg);
+  border:1px solid var(--border);padding:.05em .3em;border-radius:3px;
+}
+pre{
+  background:var(--code-bg);border:1px solid var(--border);border-radius:4px;
+  padding:.75rem 1rem;overflow-x:auto;direction:ltr;text-align:left;line-height:1.55;
+}
+pre code{border:0;padding:0;background:none;direction:inherit;unicode-bidi:inherit;font-size:.9em}
+pre.mermaid{
+  border:0;background:transparent;text-align:center;direction:ltr;
+  padding:0;overflow:visible;margin:1rem 0;
+}
 pre.mermaid svg{max-width:100%;height:auto}
 pre.mermaid text,pre.mermaid foreignObject{unicode-bidi:plaintext}
+
+/* ─── Math / Props / Foot / misc ─────────────────────────────────── */
 .math{direction:ltr;unicode-bidi:isolate;display:inline-block}
-dl.props{border:1px solid var(--fg);padding:.5rem .8rem;margin:0 0 1.5rem;font-size:.9em}
-dl.props dt{font-weight:bold}dl.props dd{margin:0 0 .4rem}
+dl.props{
+  border:1px solid var(--border);border-radius:4px;
+  padding:.6rem .85rem;margin:0 0 1.5rem;font-size:.9em;
+  background:var(--code-bg);
+}
+dl.props dt{font-weight:700;color:var(--muted);font-size:.9em}
+dl.props dd{margin:0 0 .4rem}
 input[type=checkbox]{accent-color:var(--fg)}
-.footnotes{font-size:.9em}
+.footnotes{font-size:.9em;color:var(--muted)}
 .en{font-family:"Times New Roman",Times,"Liberation Serif",serif}
 [dir="rtl"]{text-align:right}
 [dir="ltr"]{text-align:left}
 
-/* ============================================================
-   Layout with TOC sidebar
-   ============================================================ */
-.layout{display:grid;grid-template-columns:1fr;gap:1.2rem;margin-bottom:2rem}
+/* ─── Layout with TOC ────────────────────────────────────────────── */
+.layout{display:grid;grid-template-columns:1fr;gap:1.25rem;margin-bottom:2rem}
 @media (min-width:60rem){
-  .layout{grid-template-columns:17rem minmax(0,1fr);gap:1.5rem}
-  .toc-panel{position:sticky;top:1rem;align-self:start;max-height:calc(100vh - 2rem);overflow-y:auto;padding-inline-end:.25rem}
+  .layout{grid-template-columns:16rem minmax(0,1fr);gap:2rem}
+  .toc-panel{
+    position:sticky;top:1rem;align-self:start;
+    max-height:calc(100vh - 2rem);overflow-y:auto;padding-inline-end:.25rem;
+  }
 }
 
-/* ============================================================
-   Table of contents
-   ============================================================ */
-.toc{border:1px solid var(--fg);padding:.6rem .7rem;font-size:.92em;margin:0;background:var(--bg);line-height:1.5}
-@media (max-width:59.99rem){.toc{max-height:40vh;overflow-y:auto}}
-.toc-title{font-weight:bold;margin:0 0 .5rem;padding:0 0 .3rem .2rem;border-bottom:1px solid var(--fg);font-size:.95em}
+/* ─── TOC (desktop) ──────────────────────────────────────────────── */
+.toc{
+  border:1px solid var(--border);border-radius:4px;
+  padding:.75rem .85rem;margin:0;background:var(--bg);
+  font-size:.92em;line-height:1.5;
+}
+.toc-title{
+  font-weight:700;font-size:.9em;color:var(--muted);
+  margin:0 0 .6rem;padding:0 0 .4rem .2rem;
+  border-bottom:1px solid var(--border);
+}
 .toc ul{list-style:none;padding:0;margin:0}
 .toc li{margin:0}
-.toc a{display:block;text-decoration:none;padding:.18rem .35rem;border-inline-start:3px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:border-color .1s}
-.toc a:hover{border-inline-start-color:var(--fg)}
-.toc a.active{font-weight:bold;border-inline-start-color:var(--fg)}
-.toc ul ul{padding-inline-start:.7rem}
-.toc ul ul a{font-size:.94em}
-.toc ul ul ul a{font-size:.88em;opacity:.9}
+.toc a{
+  display:block;text-decoration:none;padding:.25rem .4rem;
+  border-inline-start:2px solid transparent;border-radius:2px;
+  color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  transition:border-color .15s,background .15s;
+}
+.toc a:hover{background:var(--code-bg);border-inline-start-color:var(--border)}
+.toc a.active{font-weight:600;border-inline-start-color:var(--fg);background:var(--code-bg)}
+.toc ul ul{padding-inline-start:.65rem}
+.toc ul ul a{font-size:.95em;color:var(--muted)}
+.toc ul ul a.active{color:var(--fg)}
+.toc ul ul ul a{font-size:.9em}
 
-/* ============================================================
-   Back to top button
-   ============================================================ */
-.back-top{position:fixed;inset-block-end:1.2rem;inset-inline-end:1.2rem;width:2.6rem;height:2.6rem;display:flex;align-items:center;justify-content:center;background:var(--fg);color:var(--bg);border:0;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s;font-size:1.3em;z-index:10}
+/* ─── TOC (mobile – full hierarchical vertical list) ────────────── */
+@media (max-width:59.99rem){
+  .toc{max-height:40vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+}
+
+/* ─── Back-to-top (rectangular) ─────────────────────────────────── */
+.back-top{
+  position:fixed;inset-block-end:1.2rem;inset-inline-end:1.2rem;
+  width:2.6rem;height:2.6rem;display:flex;align-items:center;justify-content:center;
+  background:var(--fg);color:var(--bg);border:0;
+  cursor:pointer;opacity:0;pointer-events:none;font-size:1.3em;z-index:10;
+  transition:opacity .2s;
+}
 .back-top.visible{opacity:.85;pointer-events:auto}
 .back-top:hover{opacity:1}
 
-/* ============================================================
-   Index: search + folder tree
-   ============================================================ */
+/* ─── Index: search + folder tree ───────────────────────────────── */
 .kb-search{display:flex;gap:.5rem;margin:0 0 1rem;flex-wrap:wrap}
-.kb-search input[type=search]{flex:1;min-width:10rem;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--fg);padding:.4rem .6rem}
-.kb-search input[type=search]:focus{outline:2px solid var(--fg);outline-offset:-1px}
-.kb-search button{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--fg);padding:.4rem .8rem;cursor:pointer;white-space:nowrap}
-.kb-search button:hover{background:var(--fg);color:var(--bg)}
-.kb-subtitle{margin:-.5rem 0 1rem;opacity:.6;font-size:.9em}
+.kb-search input[type=search]{
+  flex:1;min-width:10rem;font:inherit;color:var(--fg);background:var(--bg);
+  border:1px solid var(--border);border-radius:4px;padding:.5rem .7rem;
+}
+.kb-search input[type=search]:focus{
+  outline:2px solid var(--fg);outline-offset:-1px;border-color:var(--fg);
+}
+.kb-search button{
+  font:inherit;color:var(--fg);background:transparent;
+  border:1px solid var(--border);border-radius:4px;
+  padding:.5rem .8rem;cursor:pointer;white-space:nowrap;
+}
+.kb-search button:hover{background:var(--code-bg);border-color:var(--fg)}
+.kb-subtitle{margin:-.5rem 0 1rem;color:var(--muted);font-size:.9em}
 
 .folder-tree{list-style:none;padding:0;margin:0;line-height:1.6}
 .folder-tree ul{list-style:none;padding:0;margin:0;padding-inline-start:1.3rem}
 .folder-tree li{margin:0}
-.folder-tree details>summary{list-style:none;cursor:pointer;padding:.2rem .4rem;display:flex;align-items:center;gap:.35rem;user-select:none;border-inline-start:2px solid transparent}
+.folder-tree details>summary{
+  list-style:none;cursor:pointer;padding:.25rem .4rem;
+  display:flex;align-items:center;gap:.35rem;user-select:none;
+  border-inline-start:2px solid transparent;border-radius:2px;
+}
 .folder-tree details>summary::-webkit-details-marker{display:none}
-.folder-tree details>summary::before{content:"\\25B8";display:inline-block;font-size:.72em;width:.9em;flex-shrink:0;transition:transform .15s;opacity:.7}
+.folder-tree details>summary::before{
+  content:"\\25B8";display:inline-block;font-size:.72em;width:.9em;flex-shrink:0;
+  transition:transform .15s;opacity:.6;
+}
 .folder-tree details[open]>summary::before{transform:rotate(90deg)}
-.folder-tree details>summary:hover{border-inline-start-color:var(--fg)}
+.folder-tree details>summary:hover{background:var(--code-bg);border-inline-start-color:var(--border)}
 .folder-tree details>summary:hover::before{opacity:1}
 .folder-tree summary>.name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
-.folder-tree summary>.count{font-size:.75em;opacity:.55;border:1px solid currentColor;padding:0 .45em;margin-inline-start:auto;border-radius:99px;line-height:1.5;flex-shrink:0}
-.folder-tree li.leaf>a{display:flex;align-items:center;gap:.35rem;padding:.15rem .4rem;text-decoration:none;border-inline-start:2px solid transparent;overflow:hidden}
-.folder-tree li.leaf>a::before{content:"\\00B7";width:.9em;flex-shrink:0;opacity:.4;text-align:center}
-.folder-tree li.leaf>a>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
-.folder-tree li.leaf>a:hover{border-inline-start-color:var(--fg)}
+.folder-tree summary>.count{
+  font-size:.75em;color:var(--muted);border:1px solid var(--border);
+  padding:0 .45em;margin-inline-start:auto;border-radius:99px;
+  line-height:1.5;flex-shrink:0;
+}
+.folder-tree li.leaf>a{
+  display:flex;align-items:center;gap:.35rem;padding:.2rem .4rem;
+  text-decoration:none;border-inline-start:2px solid transparent;
+  border-radius:2px;overflow:hidden;
+}
+.folder-tree li.leaf>a::before{
+  content:"\\00B7";width:.9em;flex-shrink:0;opacity:.4;text-align:center;
+}
+.folder-tree li.leaf>a>span{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;
+}
+.folder-tree li.leaf>a:hover{background:var(--code-bg);border-inline-start-color:var(--border)}
 .folder-tree li.leaf>a:hover::before{content:"\\203A";opacity:1}
-.kb-empty{opacity:.5;font-style:italic}
+.kb-empty{color:var(--muted);font-style:italic}
 """
 
 # ---------------------------------------------------------------------------
 # font embedding
 # ---------------------------------------------------------------------------
-FONT_NAMES = ("iransharp(fanum)small", "nazanin")
+FONT_NAMES = ("iransharp", "nazanin")
 FONT_FMT = {".ttf": "truetype", ".otf": "opentype", ".woff": "woff", ".woff2": "woff2"}
 WEIGHT_WORDS = ("bold", "light", "black", "medium", "thin", "heavy", "ultra", "italic", "fa")
 FONT_CSS = ""
