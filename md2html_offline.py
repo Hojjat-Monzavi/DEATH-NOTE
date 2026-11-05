@@ -19,6 +19,8 @@ The script:
     RTL/LTR detection, TOC, font embedding.
   • note pages get a sticky sidebar TOC (desktop) with active-section
     tracking + a back-to-top button
+  • images can be opened in a fullscreen in-page lightbox (no OS fullscreen,
+    no CDN — pure inline HTML/CSS/JS)
 """
 
 import argparse
@@ -291,6 +293,32 @@ input[type=checkbox]{accent-color:var(--fg)}
 .folder-tree li.leaf>a:hover{background:var(--code-bg);border-inline-start-color:var(--border)}
 .folder-tree li.leaf>a:hover::before{content:"\\203A";opacity:1}
 .kb-empty{color:var(--muted);font-style:italic}
+
+/* ─── Lightbox ───────────────────────────────────────────────────── */
+main img{cursor:zoom-in}
+a img{cursor:pointer}
+.lightbox{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.9);
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;cursor:zoom-out;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.lightbox.open{opacity:1;pointer-events:auto}
+.lightbox img{
+  max-width:95vw;max-height:95vh;width:auto;height:auto;
+  object-fit:contain;cursor:default;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+}
+.lightbox .lb-close{
+  position:absolute;top:.75rem;inset-inline-end:.75rem;
+  background:rgba(255,255,255,.15);color:#fff;border:0;
+  width:2.6rem;height:2.6rem;font-size:1.4em;line-height:1;
+  cursor:pointer;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.lightbox .lb-close:hover{background:rgba(255,255,255,.3)}
+body.lb-open{overflow:hidden}
 """
 
 # ---------------------------------------------------------------------------
@@ -361,6 +389,7 @@ PAGE = """<!doctype html>
 {content}
 </main>
 {backtop}
+{lightbox}
 <script>
 (function(){{var r=document.documentElement,k="theme";
 try{{var s=localStorage.getItem(k);if(s)r.dataset.theme=s}}catch(e){{}}
@@ -380,6 +409,29 @@ BACKTOP_BUTTON = (
     'function c(){b.classList.toggle("visible",window.scrollY>400)}'
     'window.addEventListener("scroll",c,{passive:true});'
     'b.onclick=function(){window.scrollTo({top:0,behavior:"smooth"})};c()})();'
+    '</script>'
+)
+
+LIGHTBOX = (
+    '<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">'
+    '<button class="lb-close" id="lb-close" type="button" aria-label="Close">&times;</button>'
+    '<img id="lb-img" src="" alt="">'
+    '</div>'
+    '<script>'
+    '(function(){'
+    'var lb=document.getElementById("lightbox");'
+    'var lbImg=document.getElementById("lb-img");'
+    'if(!lb||!lbImg)return;'
+    'var lbOpen=false;'
+    'function open(src,alt){lbImg.src=src;lbImg.alt=alt||"";lb.classList.add("open");document.body.classList.add("lb-open");lbOpen=true}'
+    'function close(){lb.classList.remove("open");document.body.classList.remove("lb-open");lbImg.src="";lbOpen=false}'
+    'document.querySelectorAll("main img").forEach(function(img){'
+    'if(img.closest("a"))return;'
+    'img.addEventListener("click",function(e){e.preventDefault();open(img.src,img.alt)})'
+    '});'
+    'lb.addEventListener("click",function(e){if(e.target!==lbImg)close()});'
+    'document.addEventListener("keydown",function(e){if(e.key==="Escape"&&lbOpen)close()});'
+    '})();'
     '</script>'
 )
 
@@ -1132,7 +1184,8 @@ class Site:
             PAGE.format(
                 lang=lang, title=esc(title), css=page_css(),
                 back=back or "&nbsp;", content=content,
-                backtop=BACKTOP_BUTTON, scripts=scripts,
+                backtop=BACKTOP_BUTTON, lightbox=LIGHTBOX,
+                scripts=scripts,
             ),
             encoding="utf-8",
         )
@@ -1244,7 +1297,7 @@ def index_page(site: Site, tree: dict, lang=None) -> Path:
         PAGE.format(
             lang=lang_final, title="Index", css=page_css(),
             back="&nbsp;", content=content,
-            backtop=BACKTOP_BUTTON,
+            backtop=BACKTOP_BUTTON, lightbox=LIGHTBOX,
             scripts=INDEX_SCRIPT,
         ),
         encoding="utf-8",
